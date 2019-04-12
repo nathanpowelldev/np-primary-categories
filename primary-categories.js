@@ -1,19 +1,21 @@
 var $ = jQuery.noConflict();
 
 $(window).load(function(){
+    $('#np_primary_category_id').on( 'click', function() {
 
-    var npPCSelector = $('#np_primary_category_id');
-
-    $(npPCSelector).on( 'click', function() {
-
-        var postvars = {
+        var el = $(this),
+            postvars = {
                 'action': 'primary_category_selector',
-                'value' : $(this).val(),
+                'value' : el.val(),
+                'ids' : el.attr("data-ids"),
                 'security' : $('#np_cp_selector_nonce').val()
-        };
+            };
 
         $.post( ajaxurl, postvars, function( response ) {
-            npPCSelector.html( response );
+            if ( response.html ) {
+                el.html( response.html );
+                el.attr( 'data-ids', response.ids );
+            }
         });
     });
 });

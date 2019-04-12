@@ -110,10 +110,11 @@ class NP_Primary_Categories {
 		wp_nonce_field( 'np_cp_selector_nonce', 'np_cp_selector_nonce' );
 
 		$value = get_post_meta( $post->ID, $this->meta_key, true );
+		$term_ids = $this->get_category_ids();
 
 		$out = '<label for="' . $this->meta_key .'">' . __( 'Primary Category', 'np-primary-category' );
 		$out .= '<br>';
-		$out .= "<select id='{$this->meta_key}' name='{$this->meta_key}'>";
+		$out .= "<select id='{$this->meta_key}' name='{$this->meta_key}' data-ids='{$term_ids}'>";
 		$out .= $this->primary_category_select_options( $value );
 		$out .= '</label>';
 		$out .= '</select>';
@@ -129,7 +130,7 @@ class NP_Primary_Categories {
 	 *
 	 * @return string
 	 */
-	public function primary_category_select_options( $value = '', $html = '' ) {
+	public function primary_category_select_options( $value = '' ) {
 
 		$choices = "";
 		$terms = get_terms( array(
@@ -151,14 +152,38 @@ class NP_Primary_Categories {
 	}
 
 	/**
+	 * Comma delimited category ids
+	 *
+	 * @return string
+	 */
+	public function get_category_ids() {
+		$terms = get_terms( array(
+				'taxonomy' => 'category',
+				'hide_empty' => false
+			)
+		);
+
+		$category_ids = array();
+		foreach ( $terms as $term ) {
+			$category_ids[] = $term->term_id;
+		}
+
+		return implode( ',', $category_ids );
+	}
+
+	/**
 	 * Ajax hack for selector
 	 * Need to make sure we get newly inserted categories
 	 */
 	public function primary_category_selector() {
 		check_ajax_referer( 'np_cp_selector_nonce', 'security' );
-		if ( isset( $_POST[ 'value' ] ) ) {
-			$html = $this->primary_category_select_options( $_POST[ 'value' ] );
-			wp_send_json( $html );
+		if ( isset( $_POST[ 'value' ] ) && isset( $_POST[ 'ids'] ) ) {
+			if( $this->get_category_ids() !== $_POST[ 'ids' ] ) {
+				$response = array();
+				$response[ 'html' ] = $this->primary_category_select_options( $_POST[ 'value' ] );
+				$response[ 'ids' ] = $this->get_category_ids();
+				wp_send_json( $response );
+			}
 		}
 	}
 
