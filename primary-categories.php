@@ -111,7 +111,7 @@ class NP_Primary_Categories {
 	public function primary_category_metabox( $post, $box ) {
 
 		wp_enqueue_script( 'np_primary_categories' );
-		wp_nonce_field( 'np_cp_selector_nonce', 'np_cp_selector_nonce' );
+		wp_nonce_field( 'np_pc_selector_nonce', 'np_pc_selector_nonce' );
 
 		$value    = get_post_meta( $post->ID, $this->meta_key, true );
 		$term_ids = $this->get_category_ids();
@@ -178,7 +178,7 @@ class NP_Primary_Categories {
 	 * Need to make sure we get newly inserted categories
 	 */
 	public function primary_category_selector() {
-		check_ajax_referer( 'np_cp_selector_nonce', 'security' );
+		check_ajax_referer( 'np_pc_selector_nonce', 'security' );
 		if ( isset( $_POST[ 'value' ] ) && isset( $_POST[ 'ids' ] ) ) {
 			if ( $this->get_category_ids() !== $_POST[ 'ids' ] ) {
 				$response           = array();

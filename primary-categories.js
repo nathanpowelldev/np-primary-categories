@@ -8,7 +8,7 @@ $(window).load(function(){
                 'action': 'primary_category_selector',
                 'value' : el.val(),
                 'ids' : el.attr("data-ids"),
-                'security' : $('#np_cp_selector_nonce').val()
+                'security' : $('#np_pc_selector_nonce').val()
             };
 
         $.post( ajaxurl, postvars, function( response ) {
