@@ -132,11 +132,7 @@ class NP_Primary_Categories {
 	 * @return string
 	 */
 	public function get_category_ids() {
-		$terms = get_terms( array(
-				'taxonomy'   => 'category',
-				'hide_empty' => false
-			)
-		);
+		$terms = $this->get_categories();
 
 		$category_ids = array();
 		foreach ( $terms as $term ) {
@@ -156,22 +152,25 @@ class NP_Primary_Categories {
 	public function primary_category_select_options( $value = '' ) {
 
 		$choices = "";
-		$terms   = get_terms( array(
-				'taxonomy'   => 'category',
-				'hide_empty' => false
-			)
-		);
-
-		foreach ( $terms as $category_term ) {
-			$category_terms[ $category_term->term_id ] = $category_term->name;
-		}
-
-		foreach ( $terms as $term ) {
+		foreach ( $this->get_categories() as $term ) {
 			$selected = selected( $value, $term->term_id, false );
 			$choices  .= "<option {$selected} value='{$term->term_id}'>{$term->name}</option>";
 		}
 
 		return $choices;
+	}
+
+	/**
+	 * Gets all categories
+	 *
+	 * @return array|int|WP_Error
+	 */
+	function get_categories() {
+		return get_terms( array(
+				'taxonomy'   => 'category',
+				'hide_empty' => false
+			)
+		);
 	}
 
 	/**
